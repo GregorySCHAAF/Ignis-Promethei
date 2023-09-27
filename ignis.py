@@ -1,5 +1,6 @@
 ### par Grégory SCHAAF ###
 
+from copy import deepcopy
 import hashlib
 import os
 import sys
@@ -328,7 +329,7 @@ try:
 			commande_erreur("-a " + auth, 3, 3 + len(auth))
 
 
-	def ajuster_progression_liste_gen(chemin_fichier, liste_gen):
+	def ajuster_progression_liste_gen(chemin_fichier, liste_gen, estimation_gen_max):
 		type_gen = type(liste_gen[0][liste_gen[2]])
 
 		if type_gen == list:
@@ -343,7 +344,7 @@ try:
 					return True
 
 				liste_gen[3] += 1
-				return compter_fichier(chemin_fichier, liste_gen[3], liste_gen[-1])
+				return compter_fichier(chemin_fichier, liste_gen[3], estimation_gen_max)
 
 		if type_gen == int or liste_gen[1] == liste_gen[0][liste_gen[2]][1]:
 			if type(liste_gen[0][liste_gen[2] + 1]) == int:
@@ -412,10 +413,8 @@ try:
 
 		if type(liste_finale_element[0]) == int:
 			progres_element = liste_finale_element[0]
-		elif type(liste_finale_element[0]) == list and liste_finale_element[0][0] < liste_finale_element[0][1]:
+		else:
 			progres_element = liste_finale_element[0][0]
-		elif type(liste_finale_element[0]) == list and liste_finale_element[0][0] > liste_finale_element[0][1]:
-			progres_element = liste_finale_element[0][1]
 
 		return [liste_finale_element, progres_element, 0, 1, compteur_ligne, compteur_gen]
 
@@ -496,6 +495,7 @@ try:
 				liste_modele[i] = configurer_modele(liste_type[i], liste_nb_mot[i], liste_taille[i])
 
 		liste_gen = analyser_fichier_gen(option_c + "/", liste_nb_gen, liste_estimation)
+		liste_estimation_brut = deepcopy(liste_estimation)
 
 		for i in range(2):
 			if liste_nb_gen[i] != None:
@@ -577,7 +577,7 @@ try:
 
 				for j in range(liste_nb_gen[i]):
 					if liste_type[i][j] != "f":
-						liste_gen[i][j] = ajuster_progression_liste_gen(option_c + "/" + liste_option[i] + "/" + str(j + 1) + ".g", liste_gen[i][j])
+						liste_gen[i][j] = ajuster_progression_liste_gen(option_c + "/" + liste_option[i] + "/" + str(j + 1) + ".g", liste_gen[i][j], liste_estimation_brut[i][j])
 
 	main()
 
